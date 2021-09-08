@@ -1,0 +1,69 @@
+name: chirp
+base: core18
+version: '0.4.0'
+summary: A free, open-source tool for programming your amateur radio
+description: |
+  CHIRP is a free, open-source tool for programming your amateur radio. It
+  supports a large number of manufacturers and models, as well as provides a
+  way to interface with multiple data sources and formats.
+
+grade: devel
+confinement: strict
+
+apps:
+  chirp:
+    command: bin/desktop-launch $SNAP/usr/bin/python $SNAP/chirp-hg-e91f09ca03d0/chirpw
+    environment:
+      # Fallback to XWayland if running in a Wayland session.
+      DISABLE_WAYLAND: 1
+    plugs:
+      - raw-usb
+      - serial-port
+      - x11
+
+parts:
+  chirp:
+    plugin: dump
+    source: http://d-rats.com/hg/hgwebdir.cgi/chirp.hg/archive/e91f09ca03d0.zip
+    stage-packages:
+      - python
+      - python-gtk2
+      - python-serial
+      - python-libxml2
+    after:
+      - desktop-gtk2
+
+  # This part installs the `desktop-launch` script which initialises desktop
+  # features such as fonts, themes and the XDG environment. It also installs
+  # the GTK2 runtime libraries.
+  #
+  # It is copied straight from the snapcraft desktop helpers project. Please
+  # periodically check the source for updates and copy the changes.
+  #    https://github.com/ubuntu/snapcraft-desktop-helpers/blob/master/snapcraft.yaml
+  #
+  desktop-gtk2:
+    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
+    source-subdir: gtk
+    plugin: make
+    make-parameters: ["FLAVOR=gtk2"]
+    build-packages:
+      - build-essential
+      - libgtk2.0-dev
+    stage-packages:
+      - libxkbcommon0  # XKB_CONFIG_ROOT
+      - libgtk2.0-0
+      - libgdk-pixbuf2.0-0
+      - libglib2.0-bin
+      - libgtk2.0-bin
+      - locales-all
+      - ibus-gtk
+      - libibus-1.0-5
+      #- gnome-themes-standard
+      #- ttf-ubuntu-font-family
+      #- dmz-cursor-theme
+      #- light-themes
+      #- adwaita-icon-theme
+      #- shared-mime-info
+      #- unity-gtk2-module
+      #- libappindicator1
+      #- xdg-user-dirs
