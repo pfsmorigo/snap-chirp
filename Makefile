@@ -7,7 +7,6 @@ $(TARGET):
 build: $(TARGET)
 
 install: build
-	#sudo snap install $(TARGET) --devmode --dangerous
 	sudo snap install $(TARGET) --devmode
 
 clean:
